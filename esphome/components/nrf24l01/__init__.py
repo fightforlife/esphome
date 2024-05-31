@@ -10,7 +10,6 @@ nrf24l01_ns = cg.esphome_ns.namespace("nrf24l01")
 NRF24L01 = ns.class_("NRF24L01", spi.SPIDevice)
 
 
-CONF_NRF24L01_ID = "nrf24l01_id"
 CONF_NRF24L01_CE_PIN = "ce_pin"
 CONF_NRF24L01_CHANNEL = "channel"
 CONF_NRF24L01_RX_ADDRESS = "rx_address"
