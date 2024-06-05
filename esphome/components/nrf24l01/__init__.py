@@ -1,12 +1,18 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome import automation, pins
+from esphome import pins
 from esphome.components import spi
 from esphome.const import CONF_ID
-
+from esphome.const import (
+    CONF_ID,
+)
 DEPENDENCIES = ["spi"]
 CODEOWNERS = ["@fightforlife"]
-nrf24l01_ns = cg.esphome_ns.namespace("nrf24l01")
+
+MULTI_CONF = True
+
+
+ns = cg.esphome_ns.namespace("nrf24l01")
 NRF24L01 = ns.class_("NRF24L01", spi.SPIDevice)
 
 
