@@ -56,8 +56,8 @@ CONFIG_SCHEMA = (
             cv.Required(CONF_NRF24L01_RX_ADDRESS, default="NRF24"): cv.All(string_strict, validate_rx_adress)
         }
     .extend(spi.spi_device_schema(cs_pin_required=True))
+    )
 )
-
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
