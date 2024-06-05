@@ -40,7 +40,7 @@ NRF24L01_DATARATE = {
 
 
 def validate_rx_adress(value):
-    if(len(value) > 3 and len(value) < 5:
+    if(len(value) < 3 and len(value) > 5):
         raise cv.Invalid("only 3-5 bytes are possible")
     return value
 
