@@ -13,7 +13,7 @@ MULTI_CONF = True
 
 
 ns = cg.esphome_ns.namespace("nrf24l01")
-NRF24L01 = ns.class_("NRF24L01", spi.SPIDevice)
+NRF24L01 = ns.class_("NRF24L01", cg.PollingComponent, spi.SPIDevice)
 
 
 CONF_NRF24L01_CE_PIN = "ce_pin"
@@ -56,6 +56,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_NRF24L01_RX_ADDRESS, default="NRF24"): cv.All(cv.string_strict, validate_rx_adress)
         }
     )
+    .extend(cv.polling_component_schema("60s"))
     .extend(spi.spi_device_schema(cs_pin_required=True))
 )
 
