@@ -49,7 +49,7 @@ CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(NRF24L01),
-            cv.Required(CONF_CE_PIN): pins.gpio_output_pin_schema,
+            cv.Required(CONF_NRF24L01_CE_PIN): pins.gpio_output_pin_schema,
             cv.Optional(CONF_NRF24L01_PA_LEVEL, default="max"): cv.enum(NRF24L01_PA_LEVEL),
             cv.Optional(CONF_NRF24L01_CHANNEL, default=76): cv.int_range(min=0, max=125),
             cv.Optional(CONF_NRF24L01_DATARATE, default="1mbps"): cv.enum(NRF24L01_DATARATE),
