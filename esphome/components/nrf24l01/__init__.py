@@ -53,7 +53,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_NRF24L01_PA_LEVEL, default="max"): cv.enum(NRF24L01_PA_LEVEL),
             cv.Optional(CONF_NRF24L01_CHANNEL, default=76): cv.int_range(min=0, max=125),
             cv.Optional(CONF_NRF24L01_DATARATE, default="1mbps"): cv.enum(NRF24L01_DATARATE),
-            cv.Optional(CONF_NRF24L01_RX_ADDRESS, default="NRF24"): cv.All(string_strict, validate_rx_adress)
+            cv.Optional(CONF_NRF24L01_RX_ADDRESS, default="NRF24"): cv.All(cv.string_strict, validate_rx_adress)
         }
     .extend(spi.spi_device_schema(cs_pin_required=True))
     )
