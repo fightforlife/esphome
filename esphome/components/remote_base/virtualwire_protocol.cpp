@@ -183,12 +183,12 @@ optional<VirtualWireData> VirtualWireProtocol::decode(RemoteReceiveData src, uin
 
     // Speed detection
     bit_length_us = (src.peek(0) - src.peek(1) + src.peek(2) - src.peek(3) + src.peek(4) - src.peek(5)) / 6;
-    ESP_LOGI(TAG, "Trying to detect speed, bit_length_us: %i, skip: %i", bit_length_us, skip);
+    ESP_LOGD(TAG, "Trying to detect speed, bit_length_us: %i, skip: %i", bit_length_us, skip);
   }
 
   if (src.expect_item(bit_length_us, bit_length_us) && src.expect_item(bit_length_us, bit_length_us) &&
       src.expect_item(bit_length_us, bit_length_us)) {
-    ESP_LOGI(TAG, "Header start");
+    ESP_LOGD(TAG, "Header start");
 
     while (src.peek_item(bit_length_us, bit_length_us)) {
       src.advance(2);
@@ -206,22 +206,63 @@ optional<VirtualWireData> VirtualWireProtocol::decode(RemoteReceiveData src, uin
     if (mark == 0)
       return {};
 
-    ESP_LOGI(TAG, "Header complete");
+    ESP_LOGD(TAG, "Header complete");
     int8_t remaining = mark - 1;
     bool last_element = true;
     uint8_t expected_length = 4;
     uint8_t data;
 
-    if (!this->decode_byte_(src, remaining, last_element, expected_length, bit_length_us))
-      return {};
-    std::vector<uint8_t> out_data = {expected_length};
-    expected_length--;
-    for (; expected_length; expected_length--) {
-      if (!this->decode_byte_(src, remaining, last_element, data, bit_length_us)) {
-        ESP_LOGW(TAG, "Error decoding byte");
+    // Read length header field
+    if (!this->decode_byte_(src, remaining, last_element, expected_length, bit_length_us)) {
+        ESP_LOGW(TAG, "Error decoding length header field");
         return {};
       }
-      ESP_LOGI(TAG, "Decoded byte %02x", data);
+    std::vector<uint8_t> out_data = {expected_length};
+    expected_length--;
+
+    // Read destination address header field
+    if (!this->decode_byte_(src, remaining, last_element, data, bit_length_us)) {
+        ESP_LOGW(TAG, "Error decoding destination address header field");
+      return {};
+    }
+      ESP_LOGD(TAG, "destination address %02x", data);
+      out_data.push_back(data);
+      expected_length--;
+
+    // Read source address header field
+    if (!this->decode_byte_(src, remaining, last_element, data, bit_length_us)) {
+        ESP_LOGW(TAG, "Error decoding source address header field");
+      return {};
+    }
+      ESP_LOGD(TAG, "source address %02x", data);
+      out_data.push_back(data);
+      expected_length--;
+
+    // Read source message ID header field
+    if (!this->decode_byte_(src, remaining, last_element, data, bit_length_us)) {
+        ESP_LOGW(TAG, "Error decoding message ID header field");
+      return {};
+    }
+      ESP_LOGD(TAG, "message ID %02x", data);
+      out_data.push_back(data);
+      expected_length--;      
+
+    // Read source flags header field
+    if (!this->decode_byte_(src, remaining, last_element, data, bit_length_us)) {
+        ESP_LOGW(TAG, "Error decoding flags header field");
+      return {};
+    }
+      ESP_LOGD(TAG, "flags %02x", data);
+      out_data.push_back(data);
+      expected_length--;   
+
+
+    for (; expected_length; expected_length--) {
+      if (!this->decode_byte_(src, remaining, last_element, data, bit_length_us)) {
+        ESP_LOGW(TAG, "Error decoding data byte");
+        return {};
+      }
+      ESP_LOGD(TAG, "Decoded data byte %02x", data);
       out_data.push_back(data);
     }
     VirtualWireData out = VirtualWireData(out_data);
@@ -237,7 +278,7 @@ optional<VirtualWireData> VirtualWireProtocol::decode(RemoteReceiveData src, uin
 }
 
 void VirtualWireProtocol::dump(const VirtualWireData &data) {
-  ESP_LOGD(TAG, "Received VirtualWire: %s", data.to_string().c_str());
+  ESP_LOGI(TAG, "Received VirtualWire: %s", data.to_string().c_str());
 }
 
 }  // namespace remote_base
